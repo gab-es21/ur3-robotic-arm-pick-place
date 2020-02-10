@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ur3_pick_place</name>
+  <version>0.2.0</version>
+  <description>
+    UR3 pick-and-place: a static fixed-pose approach and a camera-guided
+    approach that segments a depth point cloud, classifies objects
+    (pen / cutlery), and sorts them into a box.
+  </description>
+
+  <maintainer email="viki@todo.todo">Gabriel Esteves</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>message_generation</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+
+  <exec_depend>message_runtime</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>tf2_sensor_msgs</exec_depend>
+  <exec_depend>actionlib</exec_depend>
+  <exec_depend>control_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
+  <exec_depend>moveit_ros_planning_interface</exec_depend>
+  <exec_depend>aruco_ros</exec_depend>
+  <exec_depend>python-numpy</exec_depend>
+  <exec_depend>python-scipy</exec_depend>
+  <exec_depend>python-yaml</exec_depend>
+  <!-- external, not catkin packages: see README setup section -->
+  <exec_depend>ur_robot_driver</exec_depend>
+  <exec_depend>ur_gazebo</exec_depend>
+  <exec_depend>ur3_moveit_config</exec_depend>
+
+  <export></export>
+</package>

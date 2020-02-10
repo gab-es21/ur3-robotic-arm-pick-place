@@ -1,0 +1,6 @@
+# Personal working notes - not for publication
+notes/
+
+# catkin build artifacts
+catkin_ws/build/
+catkin_ws/devel/
