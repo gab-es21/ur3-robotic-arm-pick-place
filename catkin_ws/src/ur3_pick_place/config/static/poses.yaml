@@ -1,0 +1,16 @@
+# Fixed poses for the static pick-and-place approach (scripts/static_pick_place.py).
+# No perception involved: the object is always at pick_pose.
+frame_id: base_link
+
+home_joint_positions: [0.0, -1.57, 0.0, -1.57, 0.0, 0.0]
+
+pick_pose:
+  position: {x: 0.35, y: 0.10, z: 0.05}
+  orientation: {x: 1.0, y: 0.0, z: 0.0, w: 0.0}   # tool z-axis pointing straight down
+
+place_pose:
+  position: {x: 0.10, y: -0.35, z: 0.08}
+  orientation: {x: 1.0, y: 0.0, z: 0.0, w: 0.0}
+
+approach_offset_z: 0.10
+retreat_offset_z: 0.10

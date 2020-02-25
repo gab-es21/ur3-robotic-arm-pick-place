@@ -1,0 +1,8 @@
+# Drop location for the dynamic pick-and-place approach (scripts/dynamic/dynamic_pick_place.py).
+frame_id: base_link
+
+box_pose:
+  position: {x: 0.10, y: -0.35, z: 0.12}
+  orientation: {x: 1.0, y: 0.0, z: 0.0, w: 0.0}
+
+approach_offset_z: 0.10

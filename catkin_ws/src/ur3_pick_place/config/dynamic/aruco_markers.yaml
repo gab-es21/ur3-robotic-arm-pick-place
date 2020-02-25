@@ -1,0 +1,9 @@
+# Calibration board used by scripts/camera_calibration.py, held by the
+# gripper and moved through a set of known poses to solve the camera
+# extrinsics. Two print sizes are kept on hand for near/far mounting.
+marker_id: 582
+marker_sizes_m:
+  near: 0.100
+  far: 0.125
+reference_frame: base_link
+camera_frame: camera_link

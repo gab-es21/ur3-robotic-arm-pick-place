@@ -1,0 +1,14 @@
+# Geometric classifier thresholds applied to each point-cloud cluster's
+# axis-aligned bounding box, in scripts/pointcloud_object_detector.py.
+classes:
+  pen:
+    length_range_m: [0.12, 0.16]
+    max_width_m: 0.015
+    elongation_min: 6.0     # length / width
+
+  cutlery:
+    length_range_m: [0.14, 0.22]
+    max_width_m: 0.035
+    elongation_min: 3.0
+
+default_class: unknown
