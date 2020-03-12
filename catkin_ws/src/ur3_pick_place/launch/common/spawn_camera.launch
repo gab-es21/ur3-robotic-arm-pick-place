@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="workspace_camera_description"
+         command="$(find xacro)/xacro '$(find ur3_pick_place)/urdf/depth_camera.urdf.xacro'"/>
+  <node name="spawn_workspace_camera" pkg="gazebo_ros" type="spawn_model"
+        args="-param workspace_camera_description -urdf -model workspace_camera"/>
+</launch>

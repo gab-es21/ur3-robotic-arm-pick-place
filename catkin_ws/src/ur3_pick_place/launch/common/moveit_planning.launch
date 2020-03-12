@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="limited" default="true"/>
+  <arg name="rviz" default="true"/>
+
+  <include file="$(find ur3_moveit_config)/launch/ur3_moveit_planning_execution.launch">
+    <arg name="limited" value="$(arg limited)"/>
+  </include>
+
+  <include if="$(arg rviz)" file="$(find ur3_moveit_config)/launch/moveit_rviz.launch">
+    <arg name="config" value="true"/>
+  </include>
+</launch>

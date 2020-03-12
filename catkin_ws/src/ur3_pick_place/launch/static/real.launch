@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+  Approach 1 (static), on the real UR3. Fixed pick/place poses, no camera.
+    source env/real.env.sh && roslaunch ur3_pick_place static/real.launch
+-->
+<launch>
+  <include file="$(find ur3_pick_place)/launch/common/bringup_real.launch">
+    <arg name="use_camera" value="false"/>
+  </include>
+  <include file="$(find ur3_pick_place)/launch/common/moveit_planning.launch"/>
+
+  <node name="static_pick_place" pkg="ur3_pick_place" type="static_pick_place.py" output="screen"/>
+</launch>

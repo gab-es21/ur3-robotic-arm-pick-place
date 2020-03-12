@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+  Real-robot entry point. robot_ip and kinematics_config default from the
+  UR3_ROBOT_IP / UR3_KINEMATICS_CONFIG environment variables (see
+  env/real.env.sh) so they don't have to be repeated on every roslaunch
+  command line; pass them explicitly to override.
+
+  kinematics_config is the per-robot calibration file produced once via:
+    roslaunch ur_calibration calibration_correction.launch \
+      robot_ip:=<robot_ip> target_filename:="ur3_calibration.yaml"
+  Left unset, the driver comes up uncalibrated, which is fine for
+  joint-space motion but not for accurate Cartesian targets.
+-->
+<launch>
+  <arg name="robot_ip" default="$(optenv UR3_ROBOT_IP 192.168.0.2)"/>
+  <arg name="limited" default="true"/>
+  <arg name="kinematics_config" default="$(optenv UR3_KINEMATICS_CONFIG)"/>
+  <arg name="use_camera" default="true"/>
+
+  <include file="$(find ur_robot_driver)/launch/ur3_bringup.launch">
+    <arg name="robot_ip" value="$(arg robot_ip)"/>
+    <arg name="limited" value="$(arg limited)"/>
+    <arg if="$(eval kinematics_config != '')" name="kinematics_config" value="$(arg kinematics_config)"/>
+  </include>
+
+  <!-- Depth camera driver. Remapped onto the same topic names the sim
+       camera uses (/camera/color/image_raw, /camera/depth/points) so the
+       perception and pick scripts don't need to know which bringup
+       launched them -- rs_camera.launch otherwise publishes the cloud on
+       /camera/depth/color/points. -->
+  <group if="$(arg use_camera)">
+    <include file="$(find realsense2_camera)/launch/rs_camera.launch">
+      <arg name="align_depth" value="true"/>
+      <arg name="filters" value="pointcloud"/>
+    </include>
+    <node name="depth_points_relay" pkg="topic_tools" type="relay"
+          args="/camera/depth/color/points /camera/depth/points"/>
+  </group>
+</launch>

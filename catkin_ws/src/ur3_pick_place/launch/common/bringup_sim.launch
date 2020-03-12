@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- Simulation entry point: UR3 in Gazebo, plus the overhead workspace camera. -->
+<launch>
+  <arg name="limited" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="gui" default="true"/>
+
+  <include file="$(find ur_gazebo)/launch/ur3.launch">
+    <arg name="limited" value="$(arg limited)"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <include file="$(find ur3_pick_place)/launch/common/spawn_camera.launch"/>
+</launch>
