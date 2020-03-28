@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!--
+  Approach 2 (dynamic), on the real UR3 + RealSense. Camera-guided detection
+  and sorting. Run dynamic/calibrate.launch once first (per camera mount).
+    source env/real.env.sh && roslaunch ur3_pick_place dynamic/real.launch
+-->
+<launch>
+  <include file="$(find ur3_pick_place)/launch/common/bringup_real.launch">
+    <arg name="use_camera" value="true"/>
+  </include>
+  <include file="$(find ur3_pick_place)/launch/common/moveit_planning.launch"/>
+
+  <node name="pointcloud_object_detector" pkg="ur3_pick_place" type="pointcloud_object_detector.py" output="screen"/>
+  <node name="dynamic_pick_place" pkg="ur3_pick_place" type="dynamic_pick_place.py" output="screen"/>
+</launch>
