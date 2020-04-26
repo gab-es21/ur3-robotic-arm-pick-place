@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UR3 Robotic Arm — Pick and Place</title>
+<meta name="description" content="A Universal Robots UR3 pick-and-place project: a fixed-pose baseline and a camera-guided approach that detects and sorts objects from a live point cloud.">
+<style>
+  :root{
+    --bg:#0b0d12;
+    --bg-panel:#12151d;
+    --bg-panel-2:#171b25;
+    --border:#242a38;
+    --text:#e7eaf2;
+    --text-dim:#98a2b8;
+    --accent:#5fd0c1;
+    --accent-2:#7c9cff;
+    --code-bg:#0d1017;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+  }
+  a{color:var(--accent);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  code, pre{
+    font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px;}
+
+  header.hero{
+    padding:64px 0 40px;
+    border-bottom:1px solid var(--border);
+    background:
+      radial-gradient(700px 300px at 15% -10%, rgba(95,208,193,.12), transparent),
+      radial-gradient(700px 300px at 85% -10%, rgba(124,156,255,.12), transparent);
+  }
+  .eyebrow{
+    display:inline-block;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--accent);
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+    padding:4px 10px;
+    border-radius:999px;
+    margin-bottom:18px;
+  }
+  h1{font-size:2.4rem;line-height:1.15;margin:0 0 14px;letter-spacing:-.01em;}
+  .lede{font-size:1.1rem;color:var(--text-dim);max-width:60ch;margin:0 0 26px;}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    padding:10px 16px;border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--bg-panel);
+    color:var(--text);font-weight:600;font-size:.92rem;
+  }
+  .btn:hover{border-color:var(--accent);text-decoration:none;}
+  .btn.primary{background:var(--accent);color:#04211d;border-color:var(--accent);}
+  .btn.primary:hover{opacity:.9;}
+
+  section{padding:52px 0;border-bottom:1px solid var(--border);}
+  section:last-of-type{border-bottom:none;}
+  h2{font-size:1.5rem;margin:0 0 8px;}
+  .section-lede{color:var(--text-dim);margin:0 0 28px;max-width:65ch;}
+
+  video{width:100%;border-radius:var(--radius);border:1px solid var(--border);display:block;background:#000;}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+  .card{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:22px;
+  }
+  .card h3{margin:0 0 4px;font-size:1.1rem;}
+  .card .tag{
+    display:inline-block;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--text-dim);margin-bottom:10px;
+  }
+  .card code.path{
+    display:block;font-size:.82rem;color:var(--accent-2);
+    background:var(--code-bg);border:1px solid var(--border);
+    padding:6px 10px;border-radius:6px;margin:10px 0 14px;
+    overflow-x:auto;white-space:nowrap;
+  }
+  .card ol, .card p{color:var(--text-dim);font-size:.94rem;margin:0;padding-left:1.1em;}
+  .card p{padding-left:0;}
+  .card li{margin-bottom:6px;}
+
+  .pipeline{
+    display:flex;align-items:stretch;gap:0;overflow-x:auto;
+    padding:8px 0 18px;
+  }
+  .pipe-step{
+    background:var(--bg-panel-2);border:1px solid var(--border);
+    border-radius:10px;padding:14px 16px;min-width:150px;flex-shrink:0;
+  }
+  .pipe-step .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);display:block;margin-bottom:4px;}
+  .pipe-step .n{font-size:.86rem;font-family:monospace;color:var(--text);}
+  .pipe-arrow{
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-dim);font-size:1.3rem;padding:0 10px;flex-shrink:0;
+  }
+
+  pre{
+    background:var(--code-bg);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    overflow-x:auto;
+    font-size:.86rem;
+  }
+  pre code{color:#c9d3e6;}
+  .comment{color:#5a6479;}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem;}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border);}
+  th{color:var(--text-dim);font-weight:600;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;}
+  td code{color:var(--accent-2);}
+
+  .tree{
+    background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 20px;font-size:.84rem;overflow-x:auto;color:var(--text-dim);
+  }
+  .tree .dir{color:var(--accent-2);}
+  .tree .comment{color:#5a6479;}
+
+  footer{padding:40px 0 70px;color:var(--text-dim);font-size:.9rem;}
+  footer a{color:var(--text-dim);}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">ROS Melodic · MoveIt · Gazebo</span>
+    <h1>UR3 Robotic Arm — Pick and Place</h1>
+    <p class="lede">
+      A fixed-pose baseline and a camera-guided approach that segments a live depth
+      point cloud, classifies what it sees, and sorts it into a box — both running
+      identically against Gazebo or the real UR3.
+    </p>
+    <div class="cta-row">
+      <a class="btn primary" href="https://github.com/gab-es21/ur3-robotic-arm-pick-place">View on GitHub</a>
+      <a class="btn" href="#demo">Watch the demo</a>
+      <a class="btn" href="#approaches">See the approaches</a>
+    </div>
+  </div>
+</header>
+
+<section id="demo">
+  <div class="wrap">
+    <h2>Demo</h2>
+    <p class="section-lede">The UR3 arm running at the socialab lab.</p>
+    <video controls preload="metadata" poster="">
+      <source src="../media/demo.mp4" type="video/mp4">
+      Your browser doesn't support embedded video —
+      <a href="../media/demo.mp4">download it directly</a>.
+    </video>
+  </div>
+</section>
+
+<section id="approaches">
+  <div class="wrap">
+    <h2>Two approaches</h2>
+    <p class="section-lede">Same arm, same gripper interface, two ways of deciding where to move it.</p>
+
+    <div class="cards">
+      <div class="card">
+        <span class="tag">Approach 1</span>
+        <h3>Static</h3>
+        <code class="path">scripts/static/static_pick_place.py</code>
+        <p>
+          No perception — the object's location is fixed and known ahead of time.
+          Home → approach → grasp → lift → move to drop pose → release → retreat,
+          driven entirely through MoveIt. The baseline that validates the driver,
+          controller, and planning pipeline before perception is layered on.
+        </p>
+      </div>
+
+      <div class="card">
+        <span class="tag">Approach 2</span>
+        <h3>Dynamic</h3>
+        <code class="path">scripts/dynamic/*.py</code>
+        <ol>
+          <li><strong>Calibrate</strong> — an ArUco board (marker id 582) held by the gripper is moved through known poses to solve the camera → robot transform.</li>
+          <li><strong>Detect</strong> — the workspace cloud is cropped, the table plane removed via RANSAC, the rest clustered per object, and each cluster classified as <strong>pen</strong> or <strong>cutlery</strong> by shape.</li>
+          <li><strong>Sort</strong> — each detected object is picked up and dropped into a sorting box.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="wrap">
+    <h2>Architecture</h2>
+    <p class="section-lede">The dynamic pipeline, node by node.</p>
+
+    <div class="pipeline">
+      <div class="pipe-step"><span class="k">Sensor</span><span class="n">depth camera</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="k">Once per mount</span><span class="n">camera_calibration.py</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="k">Per frame</span><span class="n">pointcloud_object_detector.py</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="k">/detected_objects</span><span class="n">dynamic_pick_place.py</span></div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="k">MoveIt</span><span class="n">move_group → UR3</span></div>
+    </div>
+
+    <p class="section-lede">
+      The static path is the same tail end, minus the perception stages —
+      <code>static_pick_place.py</code> talks straight to <code>move_group</code>
+      with poses read from <code>config/static/poses.yaml</code>.
+    </p>
+  </div>
+</section>
+
+<section id="environments">
+  <div class="wrap">
+    <h2>Environments</h2>
+    <p class="section-lede">
+      Both approaches run against either bringup unchanged — the scripts only ever
+      talk to MoveIt, the gripper action server, and fixed topic names, never to a
+      specific bringup file directly.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Aspect</th><th>Simulation</th><th>Real robot</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bringup</td><td><code>bringup_sim.launch</code></td><td><code>bringup_real.launch</code></td></tr>
+        <tr><td>Arm</td><td>Gazebo + <code>ur_gazebo</code></td><td><code>Universal_Robots_ROS_Driver</code></td></tr>
+        <tr><td>Camera</td><td>Gazebo depth plugin</td><td>RealSense, relayed to matching topics</td></tr>
+        <tr><td>Env vars</td><td><code>env/sim.env.sh</code></td><td><code>env/real.env.sh</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="structure">
+  <div class="wrap">
+    <h2>Repository structure</h2>
+    <div class="tree"><pre style="background:none;border:none;padding:0;margin:0;"><code>catkin_ws/src/ur3_pick_place/
+├── <span class="dir">msg/</span>DetectedObject.msg          <span class="comment"># class, pose, size, confidence</span>
+├── <span class="dir">urdf/</span>depth_camera.urdf.xacro    <span class="comment"># overhead depth camera for Gazebo</span>
+├── <span class="dir">src/ur3_pick_place/</span>
+│   └── gripper_interface.py        <span class="comment"># shared GripperCommand wrapper</span>
+├── <span class="dir">env/</span>
+│   ├── sim.env.sh
+│   └── real.env.sh
+├── <span class="dir">config/</span>
+│   ├── <span class="dir">static/</span>poses.yaml
+│   └── <span class="dir">dynamic/</span>
+│       ├── sorting_box.yaml
+│       ├── object_classes.yaml
+│       ├── aruco_markers.yaml
+│       └── camera_extrinsics.yaml
+├── <span class="dir">launch/</span>
+│   ├── <span class="dir">common/</span>          <span class="comment"># bringup_sim, bringup_real, moveit_planning</span>
+│   ├── <span class="dir">static/</span>{sim,real}.launch
+│   └── <span class="dir">dynamic/</span>{calibrate,sim,real}.launch
+└── <span class="dir">scripts/</span>
+    ├── <span class="dir">static/</span>static_pick_place.py
+    └── <span class="dir">dynamic/</span>{camera_calibration,pointcloud_object_detector,dynamic_pick_place}.py
+</code></pre></div>
+  </div>
+</section>
+
+<section id="usage">
+  <div class="wrap">
+    <h2>Running it</h2>
+    <p class="section-lede">Ubuntu 18.04 + ROS Melodic. Full setup steps are in the repo README.</p>
+    <pre><code><span class="comment"># --- simulation ---</span>
+source env/sim.env.sh
+roslaunch ur3_pick_place static/sim.launch          <span class="comment"># approach 1</span>
+<span class="comment"># or</span>
+roslaunch ur3_pick_place dynamic/calibrate.launch   <span class="comment"># approach 2, once per camera mount</span>
+roslaunch ur3_pick_place dynamic/sim.launch
+
+<span class="comment"># --- real robot ---</span>
+source env/real.env.sh
+roslaunch ur3_pick_place static/real.launch
+<span class="comment"># or</span>
+roslaunch ur3_pick_place dynamic/calibrate.launch
+roslaunch ur3_pick_place dynamic/real.launch
+</code></pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Built around UR3 work at the socialab lab (early 2020) — driver setup, calibration, MoveIt planning, and ArUco-based detection.</p>
+    <p><a href="https://github.com/gab-es21/ur3-robotic-arm-pick-place">← back to the repository</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
