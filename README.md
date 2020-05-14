@@ -131,4 +131,4 @@ roslaunch ur3_pick_place dynamic/real.launch
 
 ## Background
 
-Built around UR3 work at the socialab lab (early 2020) — driver setup, calibration, MoveIt planning, and ArUco-based detection. See [`media/demo.mp4`](media/demo.mp4) for a recording of the arm running.
+Built around UR3 work at the socialab lab in February–March 2020: driver setup, calibration, MoveIt planning, and ArUco-based detection. See [`docs/media/demo.mp4`](docs/media/demo.mp4) for a recording of the arm running.
