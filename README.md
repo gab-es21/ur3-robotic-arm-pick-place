@@ -131,4 +131,15 @@ roslaunch ur3_pick_place dynamic/real.launch
 
 ## Background
 
-Built around UR3 work at the socialab lab in February–March 2020: driver setup, calibration, MoveIt planning, and ArUco-based detection. See [`docs/media/demo.mp4`](docs/media/demo.mp4) for a recording of the arm running.
+Built around UR3 work at the socialab lab through 2020:
+
+| Date | Milestone |
+| --- | --- |
+| Feb 17, 2020 | ROS Melodic + `Universal_Robots_ROS_Driver` installed |
+| Feb 27, 2020 | UR3 Academy training modules, first driver bring-up |
+| Mar 5, 2020 | First live joint control via `rqt_joint_trajectory_controller` |
+| Mar 10–12, 2020 | MoveIt + RViz planning integration, controller topic testing |
+| Aug 18, 2020 | ArUco marker targets prepared for camera calibration |
+| Dec 9, 2020 | Arm recorded running — see [`docs/media/demo.mp4`](docs/media/demo.mp4) |
+
+This repository is a current rebuild of that project around the same driver, calibration, and planning workflow, extended with the point-cloud detection and sorting approach.
