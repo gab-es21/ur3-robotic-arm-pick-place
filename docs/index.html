@@ -135,24 +135,6 @@
 
   footer{padding:40px 0 70px;color:var(--text-dim);font-size:.9rem;}
   footer a{color:var(--text-dim);}
-
-  .timeline{position:relative;padding-left:30px;margin-top:8px;}
-  .timeline::before{
-    content:'';position:absolute;left:5px;top:6px;bottom:6px;width:2px;
-    background:var(--border);
-  }
-  .timeline-item{position:relative;padding-bottom:24px;}
-  .timeline-item:last-child{padding-bottom:0;}
-  .timeline-item::before{
-    content:'';position:absolute;left:-30px;top:4px;width:12px;height:12px;
-    border-radius:50%;background:var(--accent);
-    box-shadow:0 0 0 3px var(--bg-panel);
-  }
-  .timeline-date{
-    font-family:monospace;font-size:.78rem;letter-spacing:.03em;
-    color:var(--accent);text-transform:uppercase;
-  }
-  .timeline-desc{color:var(--text-dim);font-size:.94rem;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -170,7 +152,6 @@
       <a class="btn primary" href="https://github.com/gab-es21/ur3-robotic-arm-pick-place">View on GitHub</a>
       <a class="btn" href="#demo">Watch the demo</a>
       <a class="btn" href="#approaches">See the approaches</a>
-      <a class="btn" href="#timeline">Project timeline</a>
     </div>
   </div>
 </header>
@@ -313,43 +294,6 @@ roslaunch ur3_pick_place static/real.launch
 roslaunch ur3_pick_place dynamic/calibrate.launch
 roslaunch ur3_pick_place dynamic/real.launch
 </code></pre>
-  </div>
-</section>
-
-<section id="timeline">
-  <div class="wrap">
-    <h2>Background</h2>
-    <p class="section-lede">
-      Built around UR3 work at the socialab lab through 2020. This repository is
-      a current rebuild of that project around the same driver, calibration, and
-      planning workflow, extended with the point-cloud detection and sorting approach.
-    </p>
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-date">Feb 17, 2020</div>
-        <div class="timeline-desc">ROS Melodic + Universal_Robots_ROS_Driver installed</div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-date">Feb 27, 2020</div>
-        <div class="timeline-desc">UR3 Academy training modules, first driver bring-up</div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-date">Mar 5, 2020</div>
-        <div class="timeline-desc">First live joint control via rqt_joint_trajectory_controller</div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-date">Mar 10–12, 2020</div>
-        <div class="timeline-desc">MoveIt + RViz planning integration, controller topic testing</div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-date">Aug 18, 2020</div>
-        <div class="timeline-desc">ArUco marker targets prepared for camera calibration</div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-date">Dec 9, 2020</div>
-        <div class="timeline-desc">Arm recorded running — the demo video above</div>
-      </div>
-    </div>
   </div>
 </section>
 
