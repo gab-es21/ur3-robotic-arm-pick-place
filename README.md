@@ -128,3 +128,16 @@ roslaunch ur3_pick_place static/real.launch          # approach 1
 roslaunch ur3_pick_place dynamic/calibrate.launch    # approach 2, once per camera mount
 roslaunch ur3_pick_place dynamic/real.launch
 ```
+
+## History
+
+UR3 work at the socialab lab, 2020:
+
+| Date | Milestone |
+| --- | --- |
+| Feb 17 | ROS Melodic + `Universal_Robots_ROS_Driver` installed |
+| Feb 27 | UR3 Academy training modules, first driver bring-up |
+| Mar 5 | First live joint control via `rqt_joint_trajectory_controller` |
+| Mar 10–12 | MoveIt + RViz planning integration, controller topic testing |
+| Aug 18 | ArUco marker targets prepared for camera calibration |
+| Dec 9 | Arm recorded running — see [`docs/media/demo.mp4`](docs/media/demo.mp4) |
