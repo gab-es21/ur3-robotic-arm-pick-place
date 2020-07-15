@@ -4,7 +4,16 @@ ROS Melodic project for a Universal Robots UR3 arm: a fixed-pose baseline and a 
 
 📄 **[Full documentation, architecture, and demo video →](https://gab-es21.github.io/ur3-robotic-arm-pick-place/)**
 
-## Approaches
+## Four ways to run it
+
+Two independent choices — **approach** (how the target pose is decided) and **environment** (what's actually moving the arm) — combine into four launch commands. Environment only changes the bringup; the pick-place logic itself is identical either way and never talks to `bringup_sim`/`bringup_real` directly, only to MoveIt, the gripper action server, and fixed topic names.
+
+| | Simulation | Real robot |
+| --- | --- | --- |
+| **Static** | `roslaunch ur3_pick_place static/sim.launch` | `roslaunch ur3_pick_place static/real.launch` |
+| **Dynamic** | `roslaunch ur3_pick_place dynamic/sim.launch` † | `roslaunch ur3_pick_place dynamic/real.launch` † |
+
+† run `dynamic/calibrate.launch` once per camera mount first.
 
 **Static** — `scripts/static/static_pick_place.py`
 
@@ -19,26 +28,30 @@ An overhead depth camera drives a three-stage pipeline:
 3. **Sort** — each detected object is picked up and dropped into a sorting box.
 
 ```mermaid
-flowchart LR
-    subgraph Static
-        SP[static_pick_place.py] -->|MoveIt| MG1[move_group]
+flowchart TB
+    subgraph Env["Environment — pick one"]
+        direction LR
+        BS["bringup_sim.launch<br/>Gazebo + sim camera"]
+        BR["bringup_real.launch<br/>UR driver + RealSense"]
     end
 
-    subgraph Dynamic
-        CAM[(depth camera)] --> CAL[camera_calibration.py]
-        CAL -->|camera_link → base_link TF| DET[pointcloud_object_detector.py]
-        CAM --> DET
+    subgraph StaticA["Static approach"]
+        SP[static_pick_place.py]
+    end
+
+    subgraph DynamicA["Dynamic approach"]
+        CAL[camera_calibration.py] --> DET[pointcloud_object_detector.py]
         DET -->|/detected_objects| DP[dynamic_pick_place.py]
-        DP -->|MoveIt| MG2[move_group]
     end
 
-    MG1 --> ARM[(UR3)]
-    MG2 --> ARM
+    Env --> StaticA
+    Env --> DynamicA
+    SP -->|MoveIt| MG[move_group]
+    DP -->|MoveIt| MG
+    MG --> ARM[(UR3)]
 ```
 
 ## Environments
-
-Both approaches run against either bringup, unchanged — the scripts only ever talk to MoveIt, the gripper action server, and fixed topic names, never to `bringup_sim`/`bringup_real` directly.
 
 | Aspect | Simulation | Real robot |
 | --- | --- | --- |
@@ -110,22 +123,39 @@ source devel/setup.bash
 
 ## Running
 
-```bash
-# --- simulation ---
-source env/sim.env.sh
-roslaunch ur3_pick_place static/sim.launch          # approach 1
-# or
-roslaunch ur3_pick_place dynamic/calibrate.launch   # approach 2, once per camera mount
-roslaunch ur3_pick_place dynamic/sim.launch
+### Simulation + Static
 
-# --- real robot ---
+```bash
+source env/sim.env.sh
+roslaunch ur3_pick_place static/sim.launch
+```
+
+### Simulation + Dynamic
+
+```bash
+source env/sim.env.sh
+roslaunch ur3_pick_place dynamic/calibrate.launch   # once per camera mount
+roslaunch ur3_pick_place dynamic/sim.launch
+```
+
+### Real robot + Static
+
+```bash
 roslaunch ur_calibration calibration_correction.launch \
   robot_ip:=$UR3_ROBOT_IP target_filename:="$UR3_KINEMATICS_CONFIG"   # once per unit
 
 source env/real.env.sh
-roslaunch ur3_pick_place static/real.launch          # approach 1
-# or
-roslaunch ur3_pick_place dynamic/calibrate.launch    # approach 2, once per camera mount
+roslaunch ur3_pick_place static/real.launch
+```
+
+### Real robot + Dynamic
+
+```bash
+roslaunch ur_calibration calibration_correction.launch \
+  robot_ip:=$UR3_ROBOT_IP target_filename:="$UR3_KINEMATICS_CONFIG"   # once per unit
+
+source env/real.env.sh
+roslaunch ur3_pick_place dynamic/calibrate.launch   # once per camera mount
 roslaunch ur3_pick_place dynamic/real.launch
 ```
 

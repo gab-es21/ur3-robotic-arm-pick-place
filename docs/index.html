@@ -189,10 +189,33 @@
 
 <section id="approaches">
   <div class="wrap">
-    <h2>Two approaches</h2>
-    <p class="section-lede">Same arm, same gripper interface, two ways of deciding where to move it.</p>
+    <h2>Four ways to run it</h2>
+    <p class="section-lede">
+      Two independent choices — <strong>approach</strong> (how the target pose is
+      decided) and <strong>environment</strong> (what's actually moving the arm) —
+      combine into four launch commands. Environment only changes the bringup;
+      the pick-place logic is identical either way.
+    </p>
+    <table>
+      <thead>
+        <tr><th></th><th>Simulation</th><th>Real robot</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Static</strong></td>
+          <td><code>roslaunch ur3_pick_place static/sim.launch</code></td>
+          <td><code>roslaunch ur3_pick_place static/real.launch</code></td>
+        </tr>
+        <tr>
+          <td><strong>Dynamic</strong></td>
+          <td><code>roslaunch ur3_pick_place dynamic/sim.launch</code> †</td>
+          <td><code>roslaunch ur3_pick_place dynamic/real.launch</code> †</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="section-lede" style="margin-top:10px;font-size:.85rem;">† run <code>dynamic/calibrate.launch</code> once per camera mount first.</p>
 
-    <div class="cards">
+    <div class="cards" style="margin-top:28px;">
       <div class="card">
         <span class="tag">Approach 1</span>
         <h3>Static</h3>
@@ -222,11 +245,16 @@
 <section id="architecture">
   <div class="wrap">
     <h2>Architecture</h2>
-    <p class="section-lede">The dynamic pipeline, node by node.</p>
+    <p class="section-lede">Environment picks the bringup; approach picks the pipeline. Both land on the same MoveIt call.</p>
 
+    <p class="section-lede" style="margin-bottom:6px;"><strong>Environment</strong> — pick one:</p>
     <div class="pipeline">
-      <div class="pipe-step"><span class="k">Sensor</span><span class="n">depth camera</span></div>
-      <div class="pipe-arrow">→</div>
+      <div class="pipe-step"><span class="k">Simulation</span><span class="n">bringup_sim.launch<br>Gazebo + sim camera</span></div>
+      <div class="pipe-step" style="margin-left:10px;"><span class="k">Real robot</span><span class="n">bringup_real.launch<br>UR driver + RealSense</span></div>
+    </div>
+
+    <p class="section-lede" style="margin-bottom:6px;"><strong>Dynamic approach</strong>:</p>
+    <div class="pipeline">
       <div class="pipe-step"><span class="k">Once per mount</span><span class="n">camera_calibration.py</span></div>
       <div class="pipe-arrow">→</div>
       <div class="pipe-step"><span class="k">Per frame</span><span class="n">pointcloud_object_detector.py</span></div>
@@ -237,9 +265,11 @@
     </div>
 
     <p class="section-lede">
-      The static path is the same tail end, minus the perception stages —
+      <strong>Static approach</strong> is the same tail end, minus the perception stages —
       <code>static_pick_place.py</code> talks straight to <code>move_group</code>
-      with poses read from <code>config/static/poses.yaml</code>.
+      with poses read from <code>config/static/poses.yaml</code>. Neither approach
+      talks to the bringup directly, only to MoveIt and fixed topic names — that's
+      what makes the environment swap invisible to the pick-place logic.
     </p>
   </div>
 </section>
@@ -247,11 +277,7 @@
 <section id="environments">
   <div class="wrap">
     <h2>Environments</h2>
-    <p class="section-lede">
-      Both approaches run against either bringup unchanged — the scripts only ever
-      talk to MoveIt, the gripper action server, and fixed topic names, never to a
-      specific bringup file directly.
-    </p>
+    <p class="section-lede">What each bringup actually starts.</p>
     <table>
       <thead>
         <tr><th>Aspect</th><th>Simulation</th><th>Real robot</th></tr>
@@ -299,18 +325,32 @@
   <div class="wrap">
     <h2>Running it</h2>
     <p class="section-lede">Ubuntu 18.04 + ROS Melodic. Full setup steps are in the repo README.</p>
-    <pre><code><span class="comment"># --- simulation ---</span>
-source env/sim.env.sh
-roslaunch ur3_pick_place static/sim.launch          <span class="comment"># approach 1</span>
-<span class="comment"># or</span>
-roslaunch ur3_pick_place dynamic/calibrate.launch   <span class="comment"># approach 2, once per camera mount</span>
-roslaunch ur3_pick_place dynamic/sim.launch
 
-<span class="comment"># --- real robot ---</span>
+    <p class="section-lede" style="margin-bottom:6px;"><strong>Simulation + Static</strong></p>
+    <pre><code>source env/sim.env.sh
+roslaunch ur3_pick_place static/sim.launch
+</code></pre>
+
+    <p class="section-lede" style="margin-bottom:6px;"><strong>Simulation + Dynamic</strong></p>
+    <pre><code>source env/sim.env.sh
+roslaunch ur3_pick_place dynamic/calibrate.launch   <span class="comment"># once per camera mount</span>
+roslaunch ur3_pick_place dynamic/sim.launch
+</code></pre>
+
+    <p class="section-lede" style="margin-bottom:6px;"><strong>Real robot + Static</strong></p>
+    <pre><code>roslaunch ur_calibration calibration_correction.launch \
+  robot_ip:=$UR3_ROBOT_IP target_filename:="$UR3_KINEMATICS_CONFIG"   <span class="comment"># once per unit</span>
+
 source env/real.env.sh
 roslaunch ur3_pick_place static/real.launch
-<span class="comment"># or</span>
-roslaunch ur3_pick_place dynamic/calibrate.launch
+</code></pre>
+
+    <p class="section-lede" style="margin-bottom:6px;"><strong>Real robot + Dynamic</strong></p>
+    <pre><code>roslaunch ur_calibration calibration_correction.launch \
+  robot_ip:=$UR3_ROBOT_IP target_filename:="$UR3_KINEMATICS_CONFIG"   <span class="comment"># once per unit</span>
+
+source env/real.env.sh
+roslaunch ur3_pick_place dynamic/calibrate.launch   <span class="comment"># once per camera mount</span>
 roslaunch ur3_pick_place dynamic/real.launch
 </code></pre>
   </div>
