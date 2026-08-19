@@ -1,6 +1,9 @@
 # Personal working notes - not for publication
 notes/
 
+# Local editor settings (Peacock color, etc.) - not shared
+.vscode/
+
 # catkin build artifacts
 catkin_ws/build/
 catkin_ws/devel/
